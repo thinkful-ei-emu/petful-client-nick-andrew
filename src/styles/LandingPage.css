@@ -1,0 +1,63 @@
+
+
+
+.lp-info {
+  margin-top: 5%;
+}
+
+.lp-header {
+  font-size: 48px;
+}
+
+.lp-desc {
+  font-size: 20px;
+  padding: 0 25%;
+}
+
+.lp-img {
+  width: 20%;
+}
+
+
+.lp-form-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2% 35%;
+  padding: 2% 0;
+  background-color: rgb(143, 218, 228);
+  border-radius: 8px;
+}
+
+
+.lp-form-row {
+  display: flex;
+  justify-content:  center;
+  /* align-items: center; */
+  margin-top: 2%;
+}
+
+.lp-form-row > input {
+  flex: 1;
+}
+
+.lp-button {
+  font-size: 18px;
+  margin-top: 2%;
+  height: 40px;
+  border-radius: 8px;
+  background-color: rgb(211, 151, 252);
+  border: 1px solid rgb(211, 151, 252);
+}
+
+.lp-button:hover{
+  background-color: rgb(199, 119, 253);
+}
+
+.lp-button:focus {
+  outline: none;
+  background-color: rgb(161, 20, 255);
+}
+
+
+

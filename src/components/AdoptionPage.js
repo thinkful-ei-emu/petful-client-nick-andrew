@@ -1,61 +1,125 @@
 import React from 'react';
 import PetDisplay from './PetDisplay';
+import TicketDisplay from './TicketDisplay';
 import '../styles/AdoptionPage.css';
+
+
 class AdoptionPage extends React.Component {
 
-  constructor(){
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
-      display: 'dogs',
       isFirst: false,
-      petIndex: 0,
+      catIndex: 0,
+      dogIndex: 0,
+      ticketInterval: false,
     }
   }
+
+  componentDidMount() {
+    console.log('component did mount ran')
+    if (!this.state.ticketInterval) {
+      console.log('interval set')
+      this.props.handleInterval()
+      this.setState({
+        ticketInterval: true,
+      })
+    } 
+
+  }
+
+  componentWillUnmount() {
+    console.log('interval cleared')
+    this.setState({
+      ticketInterval: false,
+    })
+    clearInterval();
+  }
+
 
   determineOptions = () => {
-    let options = {
-      petProp: null,
-      buttonText: null,
-    };
-    if(this.state.display === 'dogs'){
-      options.petProp = dog
-      options.buttonText = 'Show me cats'
+    let buttonText = null
+    if (this.props.display === 'dogs') {
+      buttonText = 'Show me cats'
     } else {
-      options.petProp = cat
-      options.buttonText = 'Show me dogs'
-
+      buttonText = 'Show me dogs'
     }
-    return options;
-  }
-
-  handleChangeAnimal = () => {
-    let display = this.state.display
-    if(display === 'dogs'){
-      display = 'cats';
-    }
-    else if(display === 'cats'){
-      display = 'dogs'
-    }
-    this.setState({
-      display
-    })
+    return buttonText;
   }
 
   
 
+  handleNext = () => {
+    let display = this.props.display
+    let currIndex;
+    if (display === 'dogs') {
+      currIndex = this.state.dogIndex
+      currIndex++
+      this.setState({
+        dogIndex: currIndex,
+      })
+    } else {
+      currIndex = this.state.catIndex
+      currIndex++
+      this.setState({
+        catIndex: currIndex,
+      })
+    }
+
+  }
 
 
-  render(){
-    let {petProp, buttonText} = this.determineOptions();
 
-    return(
-      <div className='adoption-container'>
-      <h1>Petful</h1>
-      <button onClick={this.handleChangeAnimal} className='change-button'>{buttonText}</button>
-      <PetDisplay pet={petProp}/>
-      <button onClick={this.props.handleAdoption} className='adopt-button'>Adopt</button>
-      </div>
-    )
+  render() {
+    let buttonText = this.determineOptions();
+    let petProp;
+    let currIndex;
+    let disabled = false;
+    let adoptDisabled = true;
+    let ticketId = window.localStorage.getItem('ticket');
+
+
+
+    if (this.props.display === 'cats') {
+      petProp = this.props.cats;
+      currIndex = this.state.catIndex;
+      if (currIndex >= this.props.cats.length - 1) {
+        disabled = true;
+      }
+    }
+    else {
+      petProp = this.props.dogs;
+      currIndex = this.state.dogIndex;
+      if (currIndex >= this.props.dogs.length - 1) {
+        disabled = true;
+      }
+    }
+
+
+
+    if (!this.props.loaded) {
+      return (<p>Loading</p>)
+    }
+    else if (petProp.length === 0) {
+      return <p>No pets to display</p>
+    } else {
+      if (this.props.tickets.length && ticketId === this.props.tickets[0].id) {
+        console.log(ticketId, this.props.tickets)
+        adoptDisabled = false
+      }
+      
+      return (
+        <div className='adoption-container'>
+          <h1>Petful</h1>
+          <TicketDisplay tickets={this.props.tickets} loaded={this.props.loaded} />
+          <button onClick={this.props.handleChangeAnimal} className='change-button'>{buttonText}</button>
+          <PetDisplay pet={petProp[currIndex]} />
+          <button onClick={this.props.handleAdoption} className='adopt-button' disabled={adoptDisabled}>Adopt</button>
+          <button onClick={this.handleNext} className='next-button' disabled={disabled} >Next</button>
+        </div>
+      )
+    }
+
   }
 }
 
@@ -63,22 +127,3 @@ export default AdoptionPage
 
 
 
-const dog = {
-  imageURL: 'http://www.dogster.com/wp-content/uploads/2015/05/Cute%20dog%20listening%20to%20music%201_1.jpg',
-  imageDescription: 'A smiling golden-brown golden retreiver listening to music.',
-  name: 'Zeus',
-  sex: 'Male',
-  age: 3,
-  breed: 'Golden Retriever',
-  story: 'Owner Passed away'
-}
-
-const cat = {
-  imageURL:'https://assets3.thrillist.com/v1/image/2622128/size/tmg-slideshow_l.jpg', 
-  imageDescription: 'Orange bengal cat with black stripes lounging on concrete.',
-  name: 'Fluffy',
-  sex: 'Female',
-  age: 2,
-  breed: 'Bengal',
-  story: 'Thrown on the street'
-}

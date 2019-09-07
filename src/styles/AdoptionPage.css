@@ -43,3 +43,17 @@
 .adopt-button:hover, .change-button:hover{
   background-color: rgb(92, 179, 190);
 }
+
+.next-button {
+  margin: 1% 1%;
+  font-size: 18px;
+  font-weight: 600; 
+  height: 40px;
+  min-width: 60px;
+  border-radius: 8px;
+  background-color: rgb(161, 216, 73);
+}
+
+.next-button:hover {
+  background-color: rgb(125, 182, 34);
+}

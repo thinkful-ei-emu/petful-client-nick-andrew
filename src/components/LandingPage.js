@@ -5,28 +5,12 @@ import '../styles/LandingPage.css';
 
 class LandingPage extends React.Component {
 
-  constructor() {
-    super()
-    this.state = {
-      submitted: false,
-    }
-  }
-
-  handleUserSubmit = ev => {
-    ev.preventDefault();
-    const {username} = ev.target;
-    let email = '';
-    console.log(username.value, email);
-    this.setState({
-      submitted: true,
-    })
-
-  }
+  
 
 
   render() {
 
-    if (this.state.submitted) {
+    if (this.props.submitted) {
       return <Redirect to='/Pets' />
     } else {
       return (
@@ -39,7 +23,7 @@ class LandingPage extends React.Component {
             <img className='lp-img' src='https://www.all3dfree.net/uploads/5/1/9/6/51967249/pet_orig.jpg' alt='dog and cat' />
           </div>
           <div className='lp-form-container'>
-            <form onSubmit={this.handleUserSubmit}>
+            <form onSubmit={this.props.handleUserSubmit}>
               <div className='lp-form-row'>
                 <label htmlFor='username'>Username: </label>
                 <input type='text' id='username' required></input>

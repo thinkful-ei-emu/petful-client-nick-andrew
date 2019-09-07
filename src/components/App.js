@@ -9,142 +9,81 @@ import '../styles/App.css';
 class App extends React.Component {
 
   constructor() {
-    super()
+    super();
     this.state = {
-      dogs: [],
-      cats: [],
-      tickets: [],
-      loaded: false,
       submitted: false,
-      display: 'dogs',
-    }
-  }
-
-  handleChangeAnimal = () => {
-    let display = this.state.display
-    if (display === 'dogs') {
-      display = 'cats';
-    }
-    else if (display === 'cats') {
-      display = 'dogs'
-    }
-    this.setState({
-      display
-    })
-  }
-
-  async componentDidMount() {
-
-    let tickets = await fetch(`${config.API_ENDPOINT}/tickets`);
-    tickets = await tickets.json();
-    console.log(tickets);
-
-    let cats = await fetch(`${config.API_ENDPOINT}/pets/cats`);
-    cats = await cats.json();
-
-    let dogs = await fetch(`${config.API_ENDPOINT}/pets/dogs`);
-    dogs = await dogs.json();
-
-    this.setState({
-      dogs,
-      cats,
-      loaded: true,
-      tickets,
-    })
+    };
   }
 
 
-  handleInterval = () => {
-    let currArr;
-    let display = this.state.display
-    console.log(this.state.dogs)
-    if (this.state.display === 'dogs'){
-      currArr = this.state.dogs
-    } else {
-      currArr = this.state.cats
-    }
-    setInterval(() => {
-      console.log('set interval')
-      console.log(currArr)
-      if(window.localStorage.getItem('ticket') === this.state.tickets[0].id){
-        setTimeout(() => {}, 5000)
-      } else {
-        fetch(`${config.API_ENDPOINT}/adopt`, {
-          method: 'POST',
-        headers: {
-          'content-type': 'application/json'
-        },
-        body: JSON.stringify({display, ticketId: this.state.tickets[0].id, petId: currArr[0].id})
-        })
-        .then(() => {
-          let newArr = this.rotateArr(currArr)
-          let newTickets = this.rotateArr(this.state.tickets)
-          if(display === 'dogs'){
-            this.setState({
-              dogs: newArr,
-              tickets: newTickets,
-            })
-          } else {
-            this.setState({
-              cats: newArr,
-              tickets: newTickets,
-            })
-          }
-          
-        })
-      }
-    }, 2000)
-  }
+  // async componentDidMount() {
+  //   let tickets = await fetch(`${config.API_ENDPOINT}/tickets`);
+  //   tickets = await tickets.json();
+  //   console.log(tickets);
+
+  //   let cats = await fetch(`${config.API_ENDPOINT}/pets/cats`);
+  //   cats = await cats.json();
+
+  //   let dogs = await fetch(`${config.API_ENDPOINT}/pets/dogs`);
+  //   dogs = await dogs.json();
+
+  //   this.setState({
+  //     dogs,
+  //     cats,
+  //     loaded: true,
+  //     tickets,
+  //   }, () => {
+  //     console.log('dogs', this.state.dogs);
+  //     console.log('cats', this.state.cats);
+  //   });
+  // }
 
 
-  handleAdoption = () => {
-    let display = this.state.display
-    let ticketId = window.localStorage.getItem('ticket');
-    let petId;
-    if(display === 'dogs'){
-      petId = this.state.dogs[0].id
-    } else {
-      petId = this.state.cats[0].id
-    }
+  // handleInterval = (petArray) => {
+  //   let currArr = petArray;
 
-    let info = {
-      display,
-      ticketId,
-      petId,
-    }
+  //   // console.log('petarray', petArray);
+  //   let display = this.state.display;
+  //   // if (this.state.display === 'dogs') {
+  //   //   currArr = [...this.state.dogs];
+  //   // } else {
+  //   //   currArr = [...this.state.cats];
+  //   // }
+  //   setInterval(() => {
+  //     console.log('set interval');
+  //     if (this.state.loaded) {
+  //       if (window.localStorage.getItem('ticket') !== this.state.tickets[0].id) {
+  //         // console.log('currArr', currArr);
+  //         fetch(`${config.API_ENDPOINT}/adopt`, {
+  //           method: 'POST',
+  //           headers: {
+  //             'content-type': 'application/json'
+  //           },
+  //           body: JSON.stringify({ display, ticketId: this.state.tickets[0].id, petId: currArr[0].id })
+  //         })
+  //           .then(() => {
+  //             let newArr = this.rotateArr(currArr);
+  //             let newTickets = this.rotateArr(this.state.tickets);
+  //             if (display === 'dogs') {
+  //               this.setState({
+  //                 dogs: newArr,
+  //                 tickets: newTickets,
+  //               });
+  //             } else {
+  //               this.setState({
+  //                 cats: newArr,
+  //                 tickets: newTickets,
+  //               });
+  //             }
 
-    fetch(`${config.API_ENDPOINT}/adopt`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify(info)
-    })
-    .then(() => {
-      let newDogs = this.rotateArr(this.state)
-      let newTickets = this.rotateArr(this.state.tickets)
-      this.setState({
-        dogs: newDogs,
-        tickets: newTickets,
-      })
-    })
-     
-  }
+  //           });
+  //       }
+  //     }
+  //   }, 2000);
+  // }
 
-  rotateArr = (arr) => {
 
-    if(!arr.length){
-      return arr
-    }
-    let temp = [...arr]
 
-    temp.push(temp.shift())
-    
-    return temp
-  }
-
-  
-  
 
   handleUserSubmit = ev => {
     ev.preventDefault();
@@ -167,14 +106,14 @@ class App extends React.Component {
         this.setState({
           submitted: true,
           tickets: [...this.state.tickets, ticket]
-        })
-        window.localStorage.setItem('ticket', ticket.id)
-      })
+        });
+        window.localStorage.setItem('ticket', ticket.id);
+      });
 
   }
 
   render() {
-    
+
     return (
       <Switch>
         <Route
@@ -186,25 +125,15 @@ class App extends React.Component {
           exact path={'/Pets'}
           render={() => {
             return (
-            
-
-                <AdoptionPage
-                  display={this.state.display}
-                  handleInterval={this.handleInterval}
-                  handleAdoption={this.handleAdoption}
-                  handleChangeAnimal={this.handleChangeAnimal}
-                  cats={this.state.cats}
-                  dogs={this.state.dogs}
-                  tickets={this.state.tickets}
-                  loaded={this.state.loaded}
-                />
-              
-            )
+              <AdoptionPage
+                handleChangeAnimal={this.handleChangeAnimal}
+              />
+            );
           }
           }
         />
       </Switch>
-    )
+    );
   }
 }
 

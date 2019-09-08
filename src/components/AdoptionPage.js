@@ -7,6 +7,10 @@ import '../styles/AdoptionPage.css';
 
 class AdoptionPage extends React.Component {
 
+  static defaultProps = {
+    ticket: { id: 0, username: '', email: '' }
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -20,7 +24,9 @@ class AdoptionPage extends React.Component {
       dogIndex: 0,
       ticketInterval: false,
     };
+    this.adoptSimulator = null;
   }
+
 
 
   handleInterval = (petArray) => {
@@ -29,17 +35,28 @@ class AdoptionPage extends React.Component {
     // console.log('petarray', petArray);
     let display = this.state.display;
 
-    setInterval(() => {
-      console.log('set interval');
+    this.adoptSimulator = setInterval(() => {
       if (this.state.loaded) {
-        if (window.localStorage.getItem('ticket') !== this.state.tickets[0].id) {
+        if (window.localStorage.getItem('ticket') === this.state.tickets[0].id) {
+          console.log('waiting');
           // console.log('currArr', currArr);
+          clearInterval(this.adoptSimulator);
+        }
+        else {
+          console.log('adopt');
+          let info = {
+            display: this.state.display,
+            ticketId: this.state.tickets[0].id,
+            petId: currArr[0].id
+          };
+
+          console.log(info);
           fetch(`${config.API_ENDPOINT}/adopt`, {
             method: 'POST',
             headers: {
               'content-type': 'application/json'
             },
-            body: JSON.stringify({ display, ticketId: this.state.tickets[0].id, petId: currArr[0].id })
+            body: JSON.stringify(info)
           })
             .then(() => {
               let newArr = this.rotateArr(currArr);
@@ -55,7 +72,6 @@ class AdoptionPage extends React.Component {
                   tickets: newTickets,
                 });
               }
-
             });
         }
       }
@@ -64,9 +80,12 @@ class AdoptionPage extends React.Component {
 
 
   async componentDidMount() {
+    // console.log(tickets);
+    console.log('mount');
     let tickets = await fetch(`${config.API_ENDPOINT}/tickets`);
     tickets = await tickets.json();
-    // console.log(tickets);
+    // tickets.push(this.props.ticket);
+    console.log('ticket', this.props.ticket);
 
     let cats = await fetch(`${config.API_ENDPOINT}/pets/cats`);
     cats = await cats.json();
@@ -77,18 +96,18 @@ class AdoptionPage extends React.Component {
     this.setState({
       dogs,
       cats,
-      loaded: true,
       tickets,
+      loaded: true,
     }, () => {
-      console.log('dogs', this.state.dogs);
-      console.log('cats', this.state.cats);
+      // console.log('dogs', this.state.dogs);
+      // console.log('cats', this.state.cats);
 
       let display = this.state.display;
 
       if (!this.state.ticketInterval) {
         console.log('interval set');
         const petArray = (display === 'dogs') ? this.state.dogs : this.state.cats;
-        console.log(display, petArray);
+        // console.log(display, petArray);
         this.handleInterval(petArray);
         this.setState({
           ticketInterval: true,
@@ -97,11 +116,6 @@ class AdoptionPage extends React.Component {
     });
   }
 
-  // componentDidMount() {
-  //   console.log('component did mount ran');
-
-
-  // }
 
   componentWillUnmount() {
     console.log('interval cleared');
@@ -156,8 +170,10 @@ class AdoptionPage extends React.Component {
     let info = {
       display,
       ticketId,
-      petId,
+      petId
     };
+
+    console.log(info);
 
     fetch(`${config.API_ENDPOINT}/adopt`, {
       method: 'POST',
@@ -169,9 +185,13 @@ class AdoptionPage extends React.Component {
       .then(() => {
         let newDogs = this.rotateArr(this.state.dogs);
         let newTickets = this.rotateArr(this.state.tickets);
+        // this.props.setTickets(newTickets);
         this.setState({
           dogs: newDogs,
-          tickets: newTickets,
+          tickets: newTickets
+        }, () => {
+          const petArray = this.state.display === 'dogs' ? this.state.dogs : this.state.cats;
+          this.handleAdoption(petArray);
         });
       });
 
@@ -184,9 +204,11 @@ class AdoptionPage extends React.Component {
     }
     let temp = [...arr];
 
-    temp.push(temp.shift());
+    let first = temp.shift();
 
-    console.log('temp', temp);
+    temp.push(first);
+
+    // console.log('temp', temp);
 
     return temp;
   }
@@ -229,7 +251,7 @@ class AdoptionPage extends React.Component {
       }
     }
 
-    console.log('petprops', petProp);
+    // console.log('petprops', petProp);
 
     if (!this.state.loaded) {
       return (<p>Loading</p>);

@@ -12,77 +12,9 @@ class App extends React.Component {
     super();
     this.state = {
       submitted: false,
+      ticket: null
     };
   }
-
-
-  // async componentDidMount() {
-  //   let tickets = await fetch(`${config.API_ENDPOINT}/tickets`);
-  //   tickets = await tickets.json();
-  //   console.log(tickets);
-
-  //   let cats = await fetch(`${config.API_ENDPOINT}/pets/cats`);
-  //   cats = await cats.json();
-
-  //   let dogs = await fetch(`${config.API_ENDPOINT}/pets/dogs`);
-  //   dogs = await dogs.json();
-
-  //   this.setState({
-  //     dogs,
-  //     cats,
-  //     loaded: true,
-  //     tickets,
-  //   }, () => {
-  //     console.log('dogs', this.state.dogs);
-  //     console.log('cats', this.state.cats);
-  //   });
-  // }
-
-
-  // handleInterval = (petArray) => {
-  //   let currArr = petArray;
-
-  //   // console.log('petarray', petArray);
-  //   let display = this.state.display;
-  //   // if (this.state.display === 'dogs') {
-  //   //   currArr = [...this.state.dogs];
-  //   // } else {
-  //   //   currArr = [...this.state.cats];
-  //   // }
-  //   setInterval(() => {
-  //     console.log('set interval');
-  //     if (this.state.loaded) {
-  //       if (window.localStorage.getItem('ticket') !== this.state.tickets[0].id) {
-  //         // console.log('currArr', currArr);
-  //         fetch(`${config.API_ENDPOINT}/adopt`, {
-  //           method: 'POST',
-  //           headers: {
-  //             'content-type': 'application/json'
-  //           },
-  //           body: JSON.stringify({ display, ticketId: this.state.tickets[0].id, petId: currArr[0].id })
-  //         })
-  //           .then(() => {
-  //             let newArr = this.rotateArr(currArr);
-  //             let newTickets = this.rotateArr(this.state.tickets);
-  //             if (display === 'dogs') {
-  //               this.setState({
-  //                 dogs: newArr,
-  //                 tickets: newTickets,
-  //               });
-  //             } else {
-  //               this.setState({
-  //                 cats: newArr,
-  //                 tickets: newTickets,
-  //               });
-  //             }
-
-  //           });
-  //       }
-  //     }
-  //   }, 2000);
-  // }
-
-
 
 
   handleUserSubmit = ev => {
@@ -105,14 +37,18 @@ class App extends React.Component {
       .then(ticket => {
         this.setState({
           submitted: true,
-          tickets: [...this.state.tickets, ticket]
+          ticket
         });
         window.localStorage.setItem('ticket', ticket.id);
+      })
+      .then(() => {
+        // console.log('print');
       });
 
   }
 
   render() {
+    console.log('render app');
 
     return (
       <Switch>
@@ -127,6 +63,7 @@ class App extends React.Component {
             return (
               <AdoptionPage
                 handleChangeAnimal={this.handleChangeAnimal}
+                ticket={this.state.ticket}
               />
             );
           }

@@ -1,6 +1,7 @@
 import React from 'react';
 import PetDisplay from './PetDisplay';
 import TicketDisplay from './TicketDisplay';
+// import PetIndexDisplay from './PetIndexDisplay';
 import config from '../config';
 import '../styles/AdoptionPage.css';
 
@@ -72,16 +73,28 @@ class AdoptionPage extends React.Component {
       body: JSON.stringify(info)
     })
       .then(() => {
-        let newDogs = this.rotateArr(this.state.dogs);
+        let newArr = (display === 'dogs') ? this.state.dogs : this.state.cats;
+
+        let rotatedArr = this.rotateArr(newArr);
+        
         let newTickets = this.rotateArr(this.state.tickets);
-        // this.props.setTickets(newTickets);
-        this.setState({
-          dogs: newDogs,
-          tickets: newTickets,
-        }, () => {
-          // const petArray = this.state.display === 'dogs' ? this.state.dogs : this.state.cats;
-          this.handleInterval();
-        });
+
+        if(display === 'dogs'){
+          this.setState({
+            dogs: rotatedArr,
+            tickets: newTickets,
+          }, () => {
+            this.handleInterval();
+          });
+        } else {
+          this.setState({
+            cats: rotatedArr,
+            tickets: newTickets,
+          }, () => {
+            this.handleInterval();
+          });
+        }
+        
       });
       
 
@@ -89,11 +102,7 @@ class AdoptionPage extends React.Component {
 
 
   handleInterval = () => {
-    // let currArr = petArray;
-    // console.log('handle interval', currArr);
-
-    // console.log('petarray', petArray);
-    // let display = this.state.display;
+    
 
     this.adoptSimulator = setInterval(() => {
       let display = this.state.display;
@@ -103,20 +112,15 @@ class AdoptionPage extends React.Component {
       console.log('set interval', currArr);
       if (this.state.loaded) {
         if (window.localStorage.getItem('ticket') === this.state.tickets[0].id) {
-          console.log('waiting');
-          // console.log('currArr', currArr);
           clearInterval(this.adoptSimulator);
         }
         else {
-          console.log('adopt');
           let info = {
             display: this.state.display,
             ticketId: this.state.tickets[0].id,
             petId: currArr[0].id
           };
           
-
-          console.log(info);
           fetch(`${config.API_ENDPOINT}/adopt`, {
             method: 'POST',
             headers: {
@@ -126,7 +130,6 @@ class AdoptionPage extends React.Component {
           })
             .then(() => {
               let newArr = this.rotateArr(currArr);
-              console.log('should rotate', newArr);
               let newTickets = this.rotateArr(this.state.tickets);
               if (display === 'dogs') {
                 this.setState({
@@ -147,12 +150,9 @@ class AdoptionPage extends React.Component {
 
 
   async componentDidMount() {
-    // console.log(tickets);
-    console.log('mount');
+
     let tickets = await fetch(`${config.API_ENDPOINT}/tickets`);
     tickets = await tickets.json();
-    // tickets.push(this.props.ticket);
-    console.log('ticket', this.props.ticket);
 
     let cats = await fetch(`${config.API_ENDPOINT}/pets/cats`);
     cats = await cats.json();
@@ -166,18 +166,7 @@ class AdoptionPage extends React.Component {
       tickets,
       loaded: true,
     }, () => {
-      // console.log('dogs', this.state.dogs);
-      // console.log('cats', this.state.cats);
-
-      // let display = this.state.display;
-
       if (!this.state.ticketInterval) {
-        console.log('interval set');
-
-
-        // maybe this is why it's not rotating? 
-        // const petArray = (display === 'dogs') ? this.state.dogs : this.state.cats;
-        
         this.handleInterval();
         this.setState({
           ticketInterval: true,
@@ -282,7 +271,7 @@ class AdoptionPage extends React.Component {
       return (
         <div className='adoption-container'>
           <h1>Petful</h1>
-          {this.state.loaded && <TicketDisplay tickets={this.state.tickets} loaded={this.state.loaded} />}
+          <TicketDisplay tickets={this.state.tickets} loaded={this.state.loaded} />
           <button onClick={this.handleChangeAnimal} className='change-button'>{buttonText}</button>
           <PetDisplay pet={petProp[currIndex]} />
           <button onClick={this.handleAdoption} className='adopt-button' disabled={adoptDisabled}>Adopt</button>

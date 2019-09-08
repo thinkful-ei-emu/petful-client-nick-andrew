@@ -11,7 +11,7 @@ class LandingPage extends React.Component {
   render() {
 
     if (this.props.submitted) {
-      return <Redirect to='/Pets' />
+      return <Redirect to='/Pets' />;
     } else {
       return (
         <div className='landing-page-container'>
@@ -19,7 +19,7 @@ class LandingPage extends React.Component {
             <h1 className='lp-header'>Adopt Today!</h1>
             <p className='lp-desc'>Petful is a service that allows you to adopt a pet easily.
               The service is first come first serve. Reserve your spot today.
-        </p>
+            </p>
             <img className='lp-img' src='https://www.all3dfree.net/uploads/5/1/9/6/51967249/pet_orig.jpg' alt='dog and cat' />
           </div>
           <div className='lp-form-container'>

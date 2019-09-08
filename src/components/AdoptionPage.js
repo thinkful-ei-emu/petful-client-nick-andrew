@@ -1,10 +1,11 @@
 import React from 'react';
 import PetDisplay from './PetDisplay';
 import TicketDisplay from './TicketDisplay';
-// import PetIndexDisplay from './PetIndexDisplay';
 import config from '../config';
 import '../styles/AdoptionPage.css';
 
+
+// Component renders everything to do with the adoption functionallity
 
 class AdoptionPage extends React.Component {
 
@@ -39,14 +40,12 @@ class AdoptionPage extends React.Component {
 
     temp.push(first);
 
-    // console.log('temp', temp);
 
     return temp;
   }
 
-  handleAdoption = () => {
+  handleAdoption = () => { // Handles user adoption
     
-    console.log('handle adoption');
 
     let display = this.state.display;
     let ticketId = window.localStorage.getItem('ticket');
@@ -63,7 +62,6 @@ class AdoptionPage extends React.Component {
       petId
     };
 
-    console.log(info);
 
     fetch(`${config.API_ENDPOINT}/adopt`, {
       method: 'POST',
@@ -76,7 +74,7 @@ class AdoptionPage extends React.Component {
         let newArr = (display === 'dogs') ? this.state.dogs : this.state.cats;
 
         let rotatedArr = this.rotateArr(newArr);
-        
+
         let newTickets = this.rotateArr(this.state.tickets);
 
         if(display === 'dogs'){
@@ -101,7 +99,7 @@ class AdoptionPage extends React.Component {
   }
 
 
-  handleInterval = () => {
+  handleInterval = () => { // simulates dummy user adoption to provide UX
     
 
     this.adoptSimulator = setInterval(() => {
@@ -109,7 +107,7 @@ class AdoptionPage extends React.Component {
 
       let currArr = (display === 'dogs') ? this.state.dogs : this.state.cats;
       
-      console.log('set interval', currArr);
+   
       if (this.state.loaded) {
         if (window.localStorage.getItem('ticket') === this.state.tickets[0].id) {
           clearInterval(this.adoptSimulator);
@@ -149,7 +147,7 @@ class AdoptionPage extends React.Component {
   }
 
 
-  async componentDidMount() {
+  async componentDidMount() { // Gets ticket and pet info from server
 
     let tickets = await fetch(`${config.API_ENDPOINT}/tickets`);
     tickets = await tickets.json();
@@ -176,8 +174,7 @@ class AdoptionPage extends React.Component {
   }
 
 
-  componentWillUnmount() {
-    console.log('interval cleared');
+  componentWillUnmount() { //clears interval
     this.setState({
       ticketInterval: false,
     });
@@ -185,7 +182,7 @@ class AdoptionPage extends React.Component {
   }
 
 
-  determineOptions = () => {
+  determineOptions = () => { //helper function for button text from cats to dogs
     let buttonText = null;
     if (this.state.display === 'dogs') {
       buttonText = 'Show me cats';
@@ -195,7 +192,7 @@ class AdoptionPage extends React.Component {
     return buttonText;
   }
 
-  handleNext = () => {
+  handleNext = () => { // handles next button
     let display = this.state.display;
     let currIndex;
     if (display === 'dogs') {
@@ -217,7 +214,7 @@ class AdoptionPage extends React.Component {
 
 
 
-  handleChangeAnimal = () => {
+  handleChangeAnimal = () => { // toggles display to dogs or cats
     let display = this.state.display;
     if (display === 'dogs') {
       display = 'cats';
@@ -239,7 +236,6 @@ class AdoptionPage extends React.Component {
     let ticketId = window.localStorage.getItem('ticket');
 
     if (this.state.display === 'cats') {
-      console.log('display is cats');
       petProp = this.state.cats;
       currIndex = this.state.catIndex;
       if (currIndex >= this.state.cats.length - 1) {
@@ -247,7 +243,6 @@ class AdoptionPage extends React.Component {
       }
     }
     else {
-      console.log('display is dogs');
       petProp = this.state.dogs;
       currIndex = this.state.dogIndex;
       if (currIndex >= this.state.dogs.length - 1) {
@@ -255,7 +250,6 @@ class AdoptionPage extends React.Component {
       }
     }
 
-    // console.log('petprops', petProp);
 
     if (!this.state.loaded) {
       return (<p>Loading</p>);
@@ -264,7 +258,6 @@ class AdoptionPage extends React.Component {
       return <p>No pets to display</p>;
     } else {
       if (this.state.tickets.length && ticketId === this.state.tickets[0].id) {
-        // console.log(ticketId, this.state.tickets);
         adoptDisabled = false;
       }
 

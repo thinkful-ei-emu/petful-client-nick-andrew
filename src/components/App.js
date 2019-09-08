@@ -17,7 +17,7 @@ class App extends React.Component {
   }
 
 
-  handleUserSubmit = ev => {
+  handleUserSubmit = ev => { // posts ticket for user
     ev.preventDefault();
     const { username, email } = ev.target;
 
@@ -40,15 +40,10 @@ class App extends React.Component {
           ticket
         });
         window.localStorage.setItem('ticket', ticket.id);
-      })
-      .then(() => {
-        // console.log('print');
       });
-
   }
 
   render() {
-    console.log('render app');
 
     return (
       <Switch>

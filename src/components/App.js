@@ -37,7 +37,6 @@ class App extends React.Component {
 
     let tickets = await fetch(`${config.API_ENDPOINT}/tickets`);
     tickets = await tickets.json();
-    console.log(tickets);
 
     let cats = await fetch(`${config.API_ENDPOINT}/pets/cats`);
     cats = await cats.json();
@@ -65,7 +64,7 @@ class App extends React.Component {
     }
     setInterval(() => {
       console.log('set interval')
-      console.log(currArr)
+      console.log('currArr', currArr)
       if(window.localStorage.getItem('ticket') === this.state.tickets[0].id){
         setTimeout(() => {}, 5000)
       } else {
@@ -139,7 +138,7 @@ class App extends React.Component {
     let temp = [...arr]
 
     temp.push(temp.shift())
-    
+    console.log('temp', temp)
     return temp
   }
 
